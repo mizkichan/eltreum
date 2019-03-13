@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import csv
+import json
 import sys
 import unicodedata
+from word import Word, WordJSONEncoder
 
 SURFACE_FORM = 0
 LEFT_CONTEXT_ID = 1
@@ -37,16 +39,6 @@ A_MOD_TYPE = 30
 LID = 31
 LEMMA_ID = 32
 
-header = [
-    'surface_form',
-    'pos1',
-    'pos2',
-    'pos3',
-    'pos4',
-    'c_type',
-    'c_form',
-]
-
 
 def process(rows):
     for row in rows:
@@ -64,19 +56,13 @@ def process(rows):
         surface_form = unicodedata.normalize('NFKC', row[SURFACE_FORM])
         if not is_japanese(surface_form): continue
 
-        yield (
-            surface_form,
-            row[POS1],
-            replace_asterisk(row[POS2]),
-            replace_asterisk(row[POS3]),
-            replace_asterisk(row[POS4]),
-            replace_asterisk(row[C_TYPE]),
-            replace_asterisk(row[C_FORM]),
-        )
+        pos = tuple(x for x in [row[POS1], row[POS2], row[POS3], row[POS4]]
+                    if x != '*')
+        c_type = tuple(x for x in row[C_TYPE].split('-') if x != '*')
+        c_form = tuple(x for x in row[C_FORM].split('-') if x != '*')
+        orth_base = unicodedata.normalize('NFKC', row[ORTH_BASE])
 
-
-def replace_asterisk(s):
-    return None if s == '*' else s
+        yield Word(surface_form, pos, c_type, c_form, orth_base)
 
 
 def is_japanese(s):
@@ -92,6 +78,12 @@ def is_hiragana(c):
 
 
 if __name__ == '__main__':
-    writer = csv.writer(sys.stdout)
-    writer.writerow(header)
-    writer.writerows(set(process(csv.reader(sys.stdin))))
+    json.dump(
+        list(set(process(csv.reader(sys.stdin)))),
+        sys.stdout,
+        cls=WordJSONEncoder,
+        ensure_ascii=False,
+        check_circular=False,
+        allow_nan=False,
+        indent=2,
+    )

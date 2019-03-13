@@ -1,2 +1,2 @@
-%.csv: lex.csv.xz
-	xz -dcvv $< | ./dictfilter.py > $@
+dict.json: lex.csv.xz
+	xz -dcvv $< | python makedict.py > $@
