@@ -56,12 +56,10 @@ def process(rows):
         if row[POS1] == '記号': continue
         if row[POS2] == '固有名詞': continue
         if row[C_TYPE].startswith('文語'): continue
-        if row[C_FORM].endswith('省略'): continue
-        if row[C_FORM].endswith('融合'): continue
-        if row[C_FORM].endswith('音便'): continue
         if row[GOSHU] == '外': continue
         if row[GOSHU] == '固': continue
         if row[GOSHU] == '記号': continue
+        if row[KANA] != row[FORM]: continue
 
         surface_form = unicodedata.normalize('NFKC', row[SURFACE_FORM])
         if not is_japanese(surface_form): continue
