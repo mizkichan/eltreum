@@ -11,6 +11,9 @@ class Word:
     c_form: Tuple[str]
     orth_base: str
 
+    def __str__(self):
+        return self.surface_form
+
 
 class WordJSONEncoder(JSONEncoder):
     def default(self, o):
