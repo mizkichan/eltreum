@@ -1,2 +1,2 @@
-dict.json: lex.csv.xz
-	xz -dcvv $< | python3 makedict.py > $@
+dict.json: lex.csv
+	python3 makedict.py < $< > $@
