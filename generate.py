@@ -45,26 +45,37 @@ if __name__ == '__main__':
     副詞 = Terminal(words, pos=['副詞'])
     副詞可能名詞 = Terminal(words, pos=['名詞', '普通名詞', '副詞可能'])
     接続詞 = Terminal(words, pos=['接続詞'])
-
     ノ = Terminal(words, orth='の', pos=['助詞', '格助詞'])
-    ト = Terminal(words, orth='と', pos=['助詞', '格助詞'])
     格助詞 = Terminal(words, pos=['助詞', '格助詞'])
     副助詞 = Terminal(words, pos=['助詞', '副助詞'])
     係助詞 = Terminal(words, pos=['助詞', '係助詞'])
+    ナ = Terminal(words, orth='な', pos=['助動詞'], c_form=['連体形', '一般'])
+    タル = Terminal(words, orth='たる', pos=['助動詞'], c_form=['連体形', '一般'])
+    形状詞 = Terminal(words, pos=['形状詞'])
+    形状詞可能名詞 = Terminal(words, pos=['名詞', '普通名詞', '形状詞可能'])
+    タリ形状詞 = Terminal(words, pos=['形状詞'])
 
     普通名詞節 = NonTerminal(
         '普通名詞節',
         lambda d: [
             (d, (普通名詞, )),
-            (1, (ノ格, 普通名詞節)),
             (1, (普通名詞節, 接続詞, 普通名詞節)),
-            (1, (連体詞, 普通名詞節)),
-            (1, (連体形容詞節, 普通名詞節)),
-            (1, (連体動詞節, 普通名詞節)),
+            (1, (連体節, 普通名詞節)),
         ],
     )
-    ノ格 = NonTerminal(
-        'ノ格',
+    連体節 = NonTerminal(
+        '連体節',
+        lambda d: [
+            (d, (連体詞, )),
+            (1, (連体格, )),
+            (1, (連体形容詞節, )),
+            (1, (連体動詞節, )),
+            (1, (形状詞類, ナ)),
+            (1, (タリ形状詞, タル)),
+        ],
+    )
+    連体格 = NonTerminal(
+        '連体格',
         lambda d: [
             (1, (普通名詞節, ノ)),
         ],
@@ -83,20 +94,24 @@ if __name__ == '__main__':
             (1, (副詞節, 連体動詞)),
         ],
     )
+    形状詞類 = NonTerminal(
+        '形状詞類',
+        lambda d: [
+            (d, (形状詞, )),
+            (d, (形状詞可能名詞, )),
+        ],
+    )
     副詞節 = NonTerminal(
         '副詞節',
         lambda d: [
-            #(d, (副詞類, )),
+            #(d, (副詞, )),
+            #(d, (副詞可能名詞, )),
             (1, (普通名詞節, 副助詞)),
             (1, (普通名詞節, 格助詞)),
             (1, (普通名詞節, 係助詞)),
             (1, (副詞節, 副詞節)),
         ],
     )
-    副詞類 = NonTerminal('副詞類', lambda d: [
-        (d, (副詞, )),
-        (d, (副詞可能名詞, )),
-    ])
 
     while True:
         result = 普通名詞節(depth=0)
