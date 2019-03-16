@@ -80,13 +80,13 @@ def process(rows):
             if ((c_form[0] == '終止形' or c_form[0] == '連体形')
                     and pron.endswith('ー') and pron_base.endswith('イ')):
                 continue
-        elif pos[0] == '動詞':
-            if ((c_form[0] == '終止形' or c_form[0] == '連体形')
-                    and c_form[1] == '撥音便'):
-                continue
+
+        if pos[0] in ('連体詞', '接続詞', '助詞', '助動詞'):
+            if any(is_kanji(c) for c in orth): continue
 
         if 0 < len(c_type) and c_type[0].startswith('文語'): continue
-        if 1 < len(c_form) and c_form[1] == '融合': continue
+        if 1 < len(c_form) and any(x in c_form[1] for x in ('融合', '省略', '音便')):
+            continue
         if orth != 'を' and 'を' in orth: continue
 
         yield Word(orth, orth_base, pron, pron_base, pos, c_type, c_form)
