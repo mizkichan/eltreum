@@ -56,11 +56,14 @@ def process(rows):
         if row[POS1] == '補助記号': continue
         if row[POS1] == '記号': continue
         if row[POS2] == '固有名詞': continue
-        if row[C_TYPE].startswith('文語'): continue
         if row[GOSHU] == '外': continue
         if row[GOSHU] == '固': continue
         if row[GOSHU] == '記号': continue
         if row[KANA] != row[FORM]: continue
+        if any(x in row[PRON]
+               for x in ('イュ', 'ウォ', 'ガュ', 'ケュ', 'ゲュ', 'スィ', 'セュ', 'ツァ', 'ティ',
+                         'トゥ', 'ネュ', 'フォ', 'ムュ', 'ーッ')):
+            continue
 
         orth = unicodedata.normalize('NFKC', row[ORTH])
         if not is_japanese(orth): continue
@@ -73,12 +76,18 @@ def process(rows):
         c_type = tuple(x for x in row[C_TYPE].split('-') if x != '*')
         c_form = tuple(x for x in row[C_FORM].split('-') if x != '*')
 
-        if (pos[0] == '形容詞' and (c_form[0] == '終止形' or c_form[0] == '連体形')
-                and row[PRON].endswith('ー') and row[PRON_BASE].endswith('イ')):
-            continue
-        if (pos[0] == '動詞' and (c_form[0] == '終止形' or c_form[0] == '連体形')
-                and c_form[1] == '撥音便'):
-            continue
+        if pos[0] == '形容詞':
+            if ((c_form[0] == '終止形' or c_form[0] == '連体形')
+                    and pron.endswith('ー') and pron_base.endswith('イ')):
+                continue
+        elif pos[0] == '動詞':
+            if ((c_form[0] == '終止形' or c_form[0] == '連体形')
+                    and c_form[1] == '撥音便'):
+                continue
+
+        if 0 < len(c_type) and c_type[0].startswith('文語'): continue
+        if 1 < len(c_form) and c_form[1] == '融合': continue
+        if orth != 'を' and 'を' in orth: continue
 
         yield Word(orth, orth_base, pron, pron_base, pos, c_type, c_form)
 
@@ -88,16 +97,30 @@ def is_japanese(s):
 
 
 def is_kanji(c):
-    return 0x4e00 <= ord(c) <= 0x9fff or 0xf900 <= ord(c) <= 0xfaff
+    c = ord(c)
+    return (0x4e00 <= c <= 0x9fef  # CJK Unified Ideographs
+            or 0x3400 <= c <= 0x4dbf  # CJK Unified Ideographs Extension A
+            or 0x20000 <= c <= 0x2a6df  # CJK Unified Ideographs Extension B
+            or 0x2a700 <= c <= 0x2b73f  # CJK Unified Ideographs Extension C
+            or 0x2b740 <= c <= 0x2b81f  # CJK Unified Ideographs Extension D
+            or 0x2b820 <= c <= 0x2ceaf  # CJK Unified Ideographs Extension E
+            or 0x2ceb0 <= c <= 0x2ebef  # CJK Unified Ideographs Extension F
+            or 0xf900 <= c <= 0xfaff  # CJK Compatibility Ideographs
+            or
+            0x2f800 <= c <= 0xfa1f  # CJK Compatibility Ideographs Supplement
+            )
 
 
 def is_hiragana(c):
-    return 0x3040 <= ord(c) <= 0x309f
+    return (0x3041 <= ord(c) <= 0x308d  # 'あ'-'ろ'
+            or c in ('わ', 'を', 'ん'))
 
 
 if __name__ == '__main__':
+    result = list(set(process(csv.reader(sys.stdin))))
+    result.sort()
     json.dump(
-        list(set(process(csv.reader(sys.stdin)))),
+        result,
         sys.stdout,
         cls=WordJSONEncoder,
         ensure_ascii=False,
