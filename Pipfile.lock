@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "078d863782cbec27e1341db1a993c13413fa40eb5ae00a175fd32c17c3664c9e"
+            "sha256": "db59132d3318dac7253e2852f9d1300cdbf5498dc48711972fdc3af45e74293c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,12 +30,6 @@
             ],
             "version": "==3.0.4"
         },
-        "future": {
-            "hashes": [
-                "sha256:67045236dcfd6816dc439556d009594abf643e5eb48992e36beac09c2ca659b8"
-            ],
-            "version": "==0.17.1"
-        },
         "idna": {
             "hashes": [
                 "sha256:c357b3f628cf53ae2c4c05627ecc484553142ca23264e593d327bcde5e9c3407",
@@ -50,14 +44,6 @@
             ],
             "version": "==3.0.1"
         },
-        "pytumblr": {
-            "hashes": [
-                "sha256:ce0ba73f27237d1ef7374950b46bb8c4b13d68e6529f733ebc63799c4607ffec",
-                "sha256:d7496f966c0b42e8d8598c60b01a089d89670deb1f80d6b557168d706a428712"
-            ],
-            "index": "pypi",
-            "version": "==0.0.8"
-        },
         "requests": {
             "hashes": [
                 "sha256:502a824f31acdacb3a35b6690b5fbf0bc41d63a24a45c4004352b0242707598e",
@@ -70,6 +56,7 @@
                 "sha256:bd6533330e8748e94bf0b214775fed487d309b8b8fe823dc45641ebcd9a32f57",
                 "sha256:d3ed0c8f2e3bbc6b344fa63d6f933745ab394469da38db16bdddb461c7e25140"
             ],
+            "index": "pypi",
             "version": "==1.2.0"
         },
         "urllib3": {
