@@ -35,6 +35,7 @@ def NonTerminal(name, f):
     })
 
 
+# 連体詞と副詞が使い辛すぎる
 if __name__ == '__main__':
     words = json.load(sys.stdin, cls=WordJSONDecoder)
 
@@ -44,7 +45,6 @@ if __name__ == '__main__':
     連体動詞 = Terminal(words, pos=['動詞'], c_form=['連体形'])
     副詞 = Terminal(words, pos=['副詞'])
     副詞可能名詞 = Terminal(words, pos=['名詞', '普通名詞', '副詞可能'])
-    接続詞 = Terminal(words, pos=['接続詞'])
     ノ = Terminal(words, orth='の', pos=['助詞', '格助詞'])
     格助詞 = Terminal(words, pos=['助詞', '格助詞'])
     副助詞 = Terminal(words, pos=['助詞', '副助詞'])
@@ -59,14 +59,13 @@ if __name__ == '__main__':
         '普通名詞節',
         lambda d: [
             (d, (普通名詞, )),
-            (1, (普通名詞節, 接続詞, 普通名詞節)),
             (1, (連体節, 普通名詞節)),
         ],
     )
     連体節 = NonTerminal(
         '連体節',
         lambda d: [
-            (d, (連体詞, )),
+            #(d, (連体詞, )),
             (1, (連体格, )),
             (1, (連体形容詞節, )),
             (1, (連体動詞節, )),

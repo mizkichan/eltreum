@@ -45,8 +45,10 @@ A_CON_TYPE = 29
 A_MOD_TYPE = 30
 
 # ID
-LID = 31
+LID = 31  # 正規化すると LID の重複はなくなるので無視してよい
 LEMMA_ID = 32
+
+# TODO LID と PRON が同一の語彙をひとつにまとめたい
 
 
 def process(rows):
@@ -60,6 +62,7 @@ def process(rows):
         if row[GOSHU] == '固': continue
         if row[GOSHU] == '記号': continue
         if row[KANA] != row[FORM]: continue
+        if row[KANA_BASE] != row[FORM_BASE]: continue
         if any(x in row[PRON]
                for x in ('イュ', 'ウォ', 'ガュ', 'ケュ', 'ゲュ', 'スィ', 'セュ', 'ツァ', 'ティ',
                          'トゥ', 'ネュ', 'フォ', 'ムュ', 'ーッ')):
